@@ -27,10 +27,10 @@ void loop() {
         Serial.print(F("Longitude: "));
         Serial.println(longitude, 7);  // Print with 7 decimal places
       }
+      else {
+        Serial.println("Waiting for valid GPS data...");
+      }
     }
+  delay(1000);
   }
-  if (!gps.location.isValid()) {
-    Serial.println("Waiting for valid GPS data...");
-  }
-  delay(5000);
 }
