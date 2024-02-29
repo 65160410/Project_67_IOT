@@ -10,7 +10,7 @@ void setup() {
 
   Serial.println(F("ESP32 - GPS module"));
 }
-D
+
 void loop() {
   // Read data from the GPS module
   while (Serial2.available()) {
