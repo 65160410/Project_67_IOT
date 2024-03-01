@@ -10,7 +10,7 @@ void setup() {
 
   Serial.println(F("ESP32 - GPS module"));
 }
-D
+
 void loop() {
   // Read data from the GPS module
   while (Serial2.available()) {
@@ -26,10 +26,11 @@ void loop() {
         Serial.println(latitude, 7);  // Print with 7 decimal places
         Serial.print(F("Longitude: "));
         Serial.println(longitude, 7);  // Print with 7 decimal places
-
-        delay(5000);
+      }
+      else {
+        Serial.println("Waiting for valid GPS data...");
       }
     }
+  delay(1000);
   }
-  
 }

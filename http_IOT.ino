@@ -6,37 +6,35 @@
   #include <ESP8266HTTPClient.h>
   #include <WiFiClient.h>
 #endif
-//#include <Adafruit_Sensor.h>
-//#include <Adafruit_BME280.h>
-#include <DHT.h>
-#define DHTPIN 4
-#define DHTTYPE DHT11
-DHT dht(DHTPIN, DHTTYPE);
 
-// Replace with your network credentials
-const char* ssid     = "vivo-pin";
-const char* password = "112233445566778899";
+#include <Arduino.h>
+#include <SHTC3.h>
+#include <TinyGPS++.h>
 
-// REPLACE with your Domain name and URL path or IP address with path
-// const char* serverName = "https://staff.informatics.buu.ac.th/~ponlawat.ch/test/dbwrite.php";
-//const char* serverName = "https://staff.informatics.buu.ac.th/~ponlawat.ch/Student_work/dbwrite.php";
- const char* serverName = "https://angsila.informatics.buu.ac.th/~65160410/Student_work/dbwrite.php";
-//  const char* serverName = "https://angsila.informatics.buu.ac.th/~64160207/TEST/dbwrite.php";
- 
-// Keep this API Key value to be compatible with the PHP code provided in the project page. 
+#define GPS_BAUDRATE 9600
+const int ldrPin = 35; 
+
+SHTC3 shtc3(Wire);
+TinyGPSPlus gps;  // the TinyGPS++ object
+
+const char* ssid     = "Room603_2.4G";
+const char* password = "room9999";
+const char* serverName = "https://angsila.informatics.buu.ac.th/~65160410/Student_work/dbwrite.php";
+
 String apiKeyValue = "tPmAT5Ab3j7F9";
+String sensorName = "PROJECT";
 
-// Sensor details
-String sensorName = "DHT11";
-String sensorLocation = "Office";
-
-
-// Keep this API Key value to be compatible with the PHP code provided in the project page. 
-// If you change the apiKeyValue value, the PHP file /post-esp-data.php also needs to have the same key 
+double latitude = 0.0; // Initialize latitude outside any conditional block
+double longitude = 0.0; // Initialize longitude outside any conditional block
 
 void setup() {
 
   Serial.begin(9600);
+  Serial2.begin(GPS_BAUDRATE);
+  analogReadResolution(12);
+  Wire.begin(); // Initialize I2C communication
+  shtc3.begin(true); // Begin communication with the SHTC3 sensor
+
   WiFi.begin(ssid, password);
   Serial.println("Connecting");
   while(WiFi.status() != WL_CONNECTED) { 
@@ -46,65 +44,66 @@ void setup() {
   Serial.println("");
   Serial.print("Connected to WiFi network with IP Address: ");
   Serial.println(WiFi.localIP());
-  dht.begin();
-  //pinMode(potPin,INPUT);
-  // (you can also pass in a Wire library object like &Wire2)
- // bool status = bme.begin(0x76);
-  //if (!status) {
-    //Serial.println("Could not find a valid BME280 sensor, check wiring or change I2C address!");
-   // while (1);
-  //}
+
 }
 
 void loop() {
 
-
-  //Check WiFi connection status
     if(WiFi.status()== WL_CONNECTED){
     WiFiClient client;
     HTTPClient http;
-    // Read DHT11 sensor values
-    float temperature = dht.readTemperature();
-    float humidity = dht.readHumidity();
-    
-  // print out the value you read:
-    Serial.println(temperature);
-    Serial.println(humidity);
-    delay(500);
-    // Your Domain name with URL path or IP address with path
-    // http.begin(serverName);
-    
 
+    while (Serial2.available()) {
+    if (gps.encode(Serial2.read())) {
+      // Check if GPS fix is available
+      if (gps.location.isValid()) {
+        // Get latitude and longitude as floating-point values
+        latitude = gps.location.lat();
+        longitude = gps.location.lng();
+        }
+      }
+    }
 
-    // Your Domain name with URL path or IP address with path
+    int sensorValue = analogRead(ldrPin); // Read analog value from LDR
+    float lightIntensity = map(sensorValue, 0, 4095, 0, 100);
+    shtc3.sample();
+    float temperature = shtc3.readTempC();
+    float humidity = shtc3.readHumidity();
+
+    String Location = String(latitude, 7) + ", " + String(longitude, 7); 
+
+    Serial.print("Location: ");
+    Serial.print(Location);
+    Serial.println(" ");
+
+    Serial.print("SHTC3 Temperature: ");
+    Serial.print(temperature);
+    Serial.println(" °C");
+
+    Serial.print("SHTC3 Humidity: ");
+    Serial.print(humidity);
+    Serial.println(" %");
+
+    Serial.print("LDR: ");
+    Serial.print(lightIntensity);
+    Serial.println(" ");
+ 
     http.begin("https://angsila.informatics.buu.ac.th/~65160410/Student_work/dbwrite.php");
-   // http.begin(client,"http://localhost/test_http/dbwrite.php");
-    
-    // Specify content-type header
+
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-    // Prepare your HTTP POST request data
-    String httpRequestData = "api_key=" + apiKeyValue + "&sensor=" + sensorName
-                          + "&location=" + sensorLocation + "&value1=" + String(temperature, 2)
-                          + "&value2=" + String(humidity, 2);
-    //String httpRequestData = "POST http://localhost/test_http/dbwrite.php?&sensor=BME280&location=Office&value1=24.75&value2=49.54&value3=1005.14";
+
+    String httpRequestData = "api_key=" + apiKeyValue +
+                         "&sensor=" + sensorName +
+                         "&location=" + Location +
+                         "&lightIntensity=" + (lightIntensity, 2) +
+                         "&temperature=" + String(temperature, 2) +
+                         "&humidity=" + String(humidity, 2);
+                               
     Serial.print("httpRequestData: ");
     Serial.println(httpRequestData);
     
-    // You can comment the httpRequestData variable above
-    // then, use the httpRequestData variable below (for testing purposes without the BME280 sensor)
-    //String httpRequestData = "api_key=tPmAT5Ab3j7F9&sensor=BME280&location=Office&value1=24.75&value2=49.54&value3=1005.14";
-
-    // Send HTTP POST request
     int httpResponseCode = http.POST(httpRequestData);
-     
-    // If you need an HTTP request with a content type: text/plain
-    //http.addHeader("Content-Type", "text/plain");
-    //int httpResponseCode = http.POST("Hello, World!");
-    
-    // If you need an HTTP request with a content type: application/json, use the following:
-    //http.addHeader("Content-Type", "application/json");
-    //int httpResponseCode = http.POST("{\"value1\":\"19\",\"value2\":\"67\",\"value3\":\"78\"}");
-        
+
     if (httpResponseCode>0) {
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
@@ -119,6 +118,5 @@ void loop() {
   else {
     Serial.println("WiFi Disconnected");
   }
-  //Send an HTTP POST request every 30 seconds
-  delay(3000);  
+  delay(5000);  
 }
