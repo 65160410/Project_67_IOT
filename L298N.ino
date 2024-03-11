@@ -36,14 +36,14 @@ void loop() {
   } 
 }
 
-void motorStop() {
+void moveForward() {
   digitalWrite(in1Pin, HIGH);
   digitalWrite(in2Pin, LOW);
   digitalWrite(in3Pin, LOW);
   digitalWrite(in4Pin, HIGH);
 }
 
-void moveForward() {
+void motorStop() {
   digitalWrite(in1Pin, LOW);
   digitalWrite(in2Pin, LOW);
   digitalWrite(in3Pin, LOW);
