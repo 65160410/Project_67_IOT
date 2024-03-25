@@ -1,10 +1,11 @@
-// กำหนดพินของเซนเซอร์และมอเตอร์
 const int sensorLeftPin = 32;
 const int sensorRightPin = 35;
 const int in1Pin = 23;
 const int in2Pin = 22;
 const int in3Pin = 19;
 const int in4Pin = 18;
+const int ENA = 26;
+const int ENB = 27;
 
 void setup() {
   // กำหนดพินเป็นอินพุตหรือเอาต์พุต
@@ -14,6 +15,8 @@ void setup() {
   pinMode(in2Pin, OUTPUT);
   pinMode(in3Pin, OUTPUT);
   pinMode(in4Pin, OUTPUT);
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
 }
 
 void loop() {
@@ -36,14 +39,16 @@ void loop() {
   } 
 }
 
-void moveForward() {
+void motorStop() {
   digitalWrite(in1Pin, HIGH);
   digitalWrite(in2Pin, LOW);
   digitalWrite(in3Pin, LOW);
   digitalWrite(in4Pin, HIGH);
+  analogWrite(ENA, 50);
+  analogWrite(ENB, 50);
 }
 
-void motorStop() {
+void moveForward() {
   digitalWrite(in1Pin, LOW);
   digitalWrite(in2Pin, LOW);
   digitalWrite(in3Pin, LOW);
@@ -55,6 +60,8 @@ void turnLeft() {
   digitalWrite(in2Pin, HIGH);
   digitalWrite(in3Pin, LOW);
   digitalWrite(in4Pin, HIGH);
+  analogWrite(ENA, 50);
+  analogWrite(ENB, 50);
 }
 
 void turnRight() {
@@ -62,4 +69,6 @@ void turnRight() {
   digitalWrite(in2Pin, LOW);
   digitalWrite(in3Pin, HIGH);
   digitalWrite(in4Pin, LOW);
+  analogWrite(ENA, 50);
+  analogWrite(ENB, 50);
 }
