@@ -6,7 +6,7 @@
 uint8_t senderAddress[] = {0xD4, 0x8A, 0xFC, 0x9D, 0x5D, 0xB8};
 
 const int in1Pin = 23;
-const int in2Pin = 22;
+const int in2Pin = 2;
 const int in3Pin = 19;
 const int in4Pin = 18;
 
