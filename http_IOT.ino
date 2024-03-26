@@ -17,9 +17,9 @@ const int ldrPin = 35;
 SHTC3 shtc3(Wire);
 TinyGPSPlus gps;  // the TinyGPS++ object
 
-const char* ssid     = "Room603_2.4G";
-const char* password = "room9999";
-const char* serverName = "https://angsila.informatics.buu.ac.th/~65160410/Student_work/dbwrite.php";
+const char* ssid     = "vivo-pin";
+const char* password = "12345678";
+const char* serverName = "https://angsila.informatics.buu.ac.th/~65160410/TectIOT/dbwrite.php";
 
 String apiKeyValue = "tPmAT5Ab3j7F9";
 String sensorName = "PROJECT";
@@ -88,7 +88,7 @@ void loop() {
     Serial.print(lightIntensity);
     Serial.println(" ");
  
-    http.begin("https://angsila.informatics.buu.ac.th/~65160410/Student_work/dbwrite.php");
+    http.begin("https://angsila.informatics.buu.ac.th/~65160410/TectIOT/dbwrite.php");
 
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
@@ -118,5 +118,5 @@ void loop() {
   else {
     Serial.println("WiFi Disconnected");
   }
-  delay(5000);  
+  delay(1000 * (60 * 5));  
 }
