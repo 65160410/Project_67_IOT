@@ -95,7 +95,7 @@ void loop() {
     String httpRequestData = "api_key=" + apiKeyValue +
                          "&sensor=" + sensorName +
                          "&location=" + Location +
-                         "&lightIntensity=" + (lightIntensity, 2) +
+                         "&lightIntensity=" + String(lightIntensity, 2) +
                          "&temperature=" + String(temperature, 2) +
                          "&humidity=" + String(humidity, 2);
                                
