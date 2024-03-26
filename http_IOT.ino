@@ -118,5 +118,5 @@ void loop() {
   else {
     Serial.println("WiFi Disconnected");
   }
-  delay(1000 * (60 * 5));  
+  delay(300000);  //5 นาที
 }
