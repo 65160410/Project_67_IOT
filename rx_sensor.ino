@@ -21,8 +21,8 @@ const int ldrPin = 35;
 
 SHTC3 shtc3(Wire);
 TinyGPSPlus gps;  // the TinyGPS++ object
-const char* ssid     = "Room603_2.4G";
-const char* password = "room9999";
+const char* ssid     = "vivo-pin";
+const char* password = "12345678";
 const char* serverName = "https://angsila.informatics.buu.ac.th/~65160410/TectIOT/dbwrite.php";
 
 String apiKeyValue = "tPmAT5Ab3j7F9";
@@ -36,7 +36,7 @@ double longitude = 0.0; // Initialize longitude outside any conditional block
 uint8_t senderAddress[] = {0xD4, 0x8A, 0xFC, 0x9D, 0x5D, 0xB8};
 
 const int in1Pin = 23;
-const int in2Pin = 22;
+const int in2Pin = 2;
 const int in3Pin = 19;
 const int in4Pin = 18;
 
@@ -147,7 +147,6 @@ void setup() {
     return;
   }
 
-  Serial.begin(9600);
   Serial2.begin(GPS_BAUDRATE);
   analogReadResolution(12);
   Wire.begin(); // Initialize I2C communication
